@@ -1,0 +1,29 @@
+[package]
+name = "spectrogram"
+version = "0.1.0"
+edition = "2021"
+authors = ["Carlo Dell'Acqua <carlo.dellacqua97@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/cdellacqua/spectrogram.rs"
+
+[profile.release]
+debug = true
+
+[dependencies]
+anyhow = "1.0.86"
+dotenv-flow = "0.16.2"
+itertools = "0.13.0"
+rustfft = "6.2.0"
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
+wav = "1.0.1"
+nalgebra = "0.33.2"
+macroquad = "0.4.13"
+
+audio = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "49555dc97d035d6ed093b581f2e5a39f2cc7ae40", features = ["analysis", "input"] }
+mutex_ext = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "49555dc97d035d6ed093b581f2e5a39f2cc7ae40" }
+math_utils = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "49555dc97d035d6ed093b581f2e5a39f2cc7ae40" }
+
+# audio = { path = "../miscellaneous_libs.rs/audio.rs", features = ["full"] }
+# math_utils = { path = "../miscellaneous_libs.rs/math_utils.rs" }
+# mutex_ext = { path = "../miscellaneous_libs.rs/mutex_ext.rs" }
