@@ -5,7 +5,7 @@
 use audio::analysis::fft::FftBinPoint;
 use macroquad::{
 	color::WHITE,
-	math::{quat, vec2},
+	math::quat,
 	miniquad::window::screen_size,
 	prelude::{
 		gl_use_material, load_material, Material, MaterialParams, PipelineParams, ShaderSource,
@@ -38,17 +38,10 @@ impl SpectrogramSurface {
 			MaterialParams {
 				pipeline_params: PipelineParams::default(),
 				textures: vec!["spectrogram".to_string()],
-				uniforms: vec![
-					UniformDesc::new("screen_size", UniformType::Float2),
-					UniformDesc::new("spectrogram_size", UniformType::Float2),
-				],
+				uniforms: vec![UniformDesc::new("screen_size", UniformType::Float2)],
 			},
 		)
 		.unwrap();
-		material.set_uniform(
-			"spectrogram_size",
-			vec2(history_size as f32, fft_real_size as f32),
-		);
 		Self {
 			history_size,
 			fft_real_size,

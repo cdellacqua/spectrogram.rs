@@ -1,4 +1,5 @@
 #version 100
+
 precision mediump float;
 
 #define PI 3.14159265358979323846264338327950288
@@ -6,9 +7,9 @@ precision mediump float;
 attribute vec2 texcoord;
 attribute vec3 position;
 
-uniform vec2 screen_size;
 varying vec2 uv;
 
+uniform vec2 screen_size;
 uniform mat4 Model;
 uniform mat4 Projection;
 
