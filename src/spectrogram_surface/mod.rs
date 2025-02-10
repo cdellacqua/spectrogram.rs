@@ -5,7 +5,6 @@
 use audio::analysis::fft::FftBinPoint;
 use macroquad::{
 	color::WHITE,
-	math::quat,
 	miniquad::window::screen_size,
 	prelude::{
 		gl_use_material, load_material, Material, MaterialParams, PipelineParams, ShaderSource,
@@ -14,7 +13,6 @@ use macroquad::{
 	shapes::draw_rectangle,
 	texture::{FilterMode, Texture2D},
 };
-use math_utils::one_dimensional_mapping::{MapRangeClamped, MapRatioClamped};
 
 use crate::config::{MAX_MAGNITUDE, SAMPLES_PER_WINDOW, SAMPLE_RATE};
 
@@ -38,10 +36,14 @@ impl SpectrogramSurface {
 			MaterialParams {
 				pipeline_params: PipelineParams::default(),
 				textures: vec!["spectrogram".to_string()],
-				uniforms: vec![UniformDesc::new("screen_size", UniformType::Float2)],
+				uniforms: vec![
+					UniformDesc::new("screen_size", UniformType::Float2),
+					UniformDesc::new("max_magnitude", UniformType::Float1),
+				],
 			},
 		)
 		.unwrap();
+		material.set_uniform("max_magnitude", MAX_MAGNITUDE);
 		Self {
 			history_size,
 			fft_real_size,
@@ -56,23 +58,9 @@ impl SpectrogramSurface {
 			.copy_within(self.fft_real_size * COLOR_CHANNELS..spectrogram_len, 0);
 		let base_idx = spectrogram_len - self.fft_real_size * COLOR_CHANNELS;
 		for (i, point) in fft.iter().take(self.fft_real_size).enumerate() {
-			let ratio = point.magnitude.map_clamped((0., MAX_MAGNITUDE), (0., 1.));
-			let low = quat(0., 0., 0.2, 0.);
-			let mid = quat(0., 1., 0., 0.);
-			let high = quat(1., 1., 1., 0.);
-			let color = if ratio < 0.5 {
-				low + (mid - low) * ratio / 0.5
-			} else {
-				mid + (high - mid) * (ratio - 0.5) / 0.5
-			};
-
 			self.spectrogram_as_texture
 				[base_idx + i * COLOR_CHANNELS..base_idx + (i + 1) * COLOR_CHANNELS]
-				.copy_from_slice(
-					&color
-						.to_array()
-						.map(|f| f.map_ratio_clamped((0., 255.)) as u8),
-				);
+				.copy_from_slice(&point.magnitude.to_be_bytes());
 		}
 	}
 
