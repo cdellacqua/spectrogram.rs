@@ -4,7 +4,7 @@ precision mediump float;
 
 varying vec2 uv;
 
-uniform float max_magnitude;
+uniform float max_power;
 uniform sampler2D spectrogram;
 
 float rgba_to_f32(vec4 color) {
@@ -24,7 +24,7 @@ void main() {
 	vec4 sample = texture2D(spectrogram, uv);
 	float magnitude = rgba_to_f32(sample);
 
-  float ratio = min(magnitude / max_magnitude, 1.0);
+  float ratio = min(magnitude / max_power, 1.0);
   vec4 low    = vec4(0.0, 0.0, 0.2, 1.0);
   vec4 mid    = vec4(0.0, 1.0, 0.0, 1.0);
   vec4 high   = vec4(1.0, 1.0, 1.0, 1.0);

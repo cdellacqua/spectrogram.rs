@@ -3,11 +3,8 @@ use std::{
 	thread::spawn,
 };
 
-use audio::input::InputStreamPollerBuilder;
-use audio::{
-	analysis::fft::{self},
-	AudioStreamSamplingState,
-};
+use audio::{analysis::dft::StftAnalyzer, input::InputStreamPollerBuilder};
+use audio::AudioStreamSamplingState;
 use macroquad::{input, prelude::*};
 use spectrogram::{
 	config::{FFT_BINS, HISTORY_SIZE, INPUT_DEVICE_NAME, SAMPLES_PER_WINDOW, SAMPLE_RATE},
@@ -27,7 +24,7 @@ async fn main() {
 			.build()
 			.unwrap();
 
-			let mut fft = fft::StftAnalyzer::<SAMPLE_RATE, SAMPLES_PER_WINDOW>::default();
+			let mut fft = StftAnalyzer::<SAMPLE_RATE, SAMPLES_PER_WINDOW>::default();
 			loop {
 				assert!(matches!(
 					stream_poller.state(),

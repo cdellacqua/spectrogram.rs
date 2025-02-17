@@ -20,10 +20,11 @@ wav = "1.0.1"
 nalgebra = "0.33.2"
 macroquad = "0.4.13"
 
-audio = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "49555dc97d035d6ed093b581f2e5a39f2cc7ae40", features = ["analysis", "input"] }
-mutex_ext = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "49555dc97d035d6ed093b581f2e5a39f2cc7ae40" }
-math_utils = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "49555dc97d035d6ed093b581f2e5a39f2cc7ae40" }
+audio = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "bf3d78c15d14483ec83b1b1f435fbea4425505ff", features = ["analysis", "input"] }
+mutex_ext = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "bf3d78c15d14483ec83b1b1f435fbea4425505ff" }
+math_utils = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "bf3d78c15d14483ec83b1b1f435fbea4425505ff" }
 
+# [patch."https://github.com/cdellacqua/miscellaneous_libs.rs.git"]
 # audio = { path = "../miscellaneous_libs.rs/audio.rs", features = ["full"] }
 # math_utils = { path = "../miscellaneous_libs.rs/math_utils.rs" }
 # mutex_ext = { path = "../miscellaneous_libs.rs/mutex_ext.rs" }

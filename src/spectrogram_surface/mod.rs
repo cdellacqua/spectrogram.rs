@@ -2,7 +2,7 @@
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::cast_precision_loss)]
 
-use audio::analysis::fft::FftBinPoint;
+use audio::analysis::Harmonic;
 use macroquad::{
 	color::WHITE,
 	miniquad::window::screen_size,
@@ -14,7 +14,7 @@ use macroquad::{
 	texture::{FilterMode, Texture2D},
 };
 
-use crate::config::{MAX_MAGNITUDE, SAMPLES_PER_WINDOW, SAMPLE_RATE};
+use crate::config::{MAX_POWER, SAMPLES_PER_WINDOW, SAMPLE_RATE};
 
 pub struct SpectrogramSurface {
 	material: Material,
@@ -38,12 +38,12 @@ impl SpectrogramSurface {
 				textures: vec!["spectrogram".to_string()],
 				uniforms: vec![
 					UniformDesc::new("screen_size", UniformType::Float2),
-					UniformDesc::new("max_magnitude", UniformType::Float1),
+					UniformDesc::new("max_power", UniformType::Float1),
 				],
 			},
 		)
 		.unwrap();
-		material.set_uniform("max_magnitude", MAX_MAGNITUDE);
+		material.set_uniform("max_power", MAX_POWER);
 		Self {
 			history_size,
 			fft_real_size,
@@ -52,7 +52,7 @@ impl SpectrogramSurface {
 		}
 	}
 
-	pub fn update(&mut self, fft: &[FftBinPoint<SAMPLE_RATE, SAMPLES_PER_WINDOW>]) {
+	pub fn update(&mut self, fft: &[Harmonic<SAMPLE_RATE, SAMPLES_PER_WINDOW>]) {
 		let spectrogram_len = self.spectrogram_as_texture.len();
 		self.spectrogram_as_texture
 			.copy_within(self.fft_real_size * COLOR_CHANNELS..spectrogram_len, 0);
@@ -60,7 +60,7 @@ impl SpectrogramSurface {
 		for (i, point) in fft.iter().take(self.fft_real_size).enumerate() {
 			self.spectrogram_as_texture
 				[base_idx + i * COLOR_CHANNELS..base_idx + (i + 1) * COLOR_CHANNELS]
-				.copy_from_slice(&point.magnitude.to_be_bytes());
+				.copy_from_slice(&point.power().to_be_bytes());
 		}
 	}
 
