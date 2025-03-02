@@ -20,9 +20,9 @@ wav = "1.0.1"
 nalgebra = "0.33.2"
 macroquad = "0.4.13"
 
-audio = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "bf3d78c15d14483ec83b1b1f435fbea4425505ff", features = ["analysis", "input"] }
-mutex_ext = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "bf3d78c15d14483ec83b1b1f435fbea4425505ff" }
-math_utils = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "bf3d78c15d14483ec83b1b1f435fbea4425505ff" }
+audio = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "ca29c7ed218af65ac7304f9f462c17179477ae34", features = ["analysis", "input"] }
+mutex_ext = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "ca29c7ed218af65ac7304f9f462c17179477ae34" }
+math_utils = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "ca29c7ed218af65ac7304f9f462c17179477ae34" }
 
 # [patch."https://github.com/cdellacqua/miscellaneous_libs.rs.git"]
 # audio = { path = "../miscellaneous_libs.rs/audio.rs", features = ["full"] }

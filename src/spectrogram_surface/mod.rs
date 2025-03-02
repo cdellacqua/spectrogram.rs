@@ -7,8 +7,7 @@ use macroquad::{
 	color::WHITE,
 	miniquad::window::screen_size,
 	prelude::{
-		gl_use_material, load_material, Material, MaterialParams, PipelineParams, ShaderSource,
-		UniformDesc, UniformType,
+		gl_use_default_material, gl_use_material, load_material, Material, MaterialParams, PipelineParams, ShaderSource, UniformDesc, UniformType
 	},
 	shapes::draw_rectangle,
 	texture::{FilterMode, Texture2D},
@@ -78,6 +77,7 @@ impl SpectrogramSurface {
 
 		gl_use_material(&self.material);
 		draw_rectangle(0., 0., width, height, WHITE);
+		gl_use_default_material();
 	}
 }
 
