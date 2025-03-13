@@ -3,48 +3,60 @@
 
 use core::f32;
 use std::{
-	sync::mpsc::{sync_channel, TryRecvError},
-	thread::spawn,
+	process::exit,
+	sync::{Arc, RwLock},
 };
 
-use audio::AudioStreamSamplingState;
-use audio::{analysis::dft::StftAnalyzer, input::InputStreamPollerBuilder};
+use audio::{
+	analysis::{dft::StftAnalyzer, frequency_to_bin_idx},
+	input::InputStreamBuilder,
+};
 use macroquad::{input, prelude::*};
+use ringbuffer::{AllocRingBuffer, RingBuffer};
 use spectrogram::{
-	config::{FFT_BINS, HISTORY_SIZE, INPUT_DEVICE_NAME, SAMPLES_PER_WINDOW, SAMPLE_RATE},
+	config::{HISTORY_SIZE, INPUT_DEVICE_NAME, MAX_FREQUENCY, SAMPLES_PER_WINDOW, SAMPLE_RATE},
 	spectrogram_surface::SpectrogramSurface,
 };
 
 #[macroquad::main("spectrogram")]
 async fn main() {
-	let (fft_tx, fft_rx) = sync_channel(0);
+	let mut buffer = AllocRingBuffer::new(SAMPLES_PER_WINDOW);
+	let mut analyzer = StftAnalyzer::<SAMPLE_RATE, SAMPLES_PER_WINDOW>::default();
+	let spectrogram_surface = Arc::new(RwLock::new(SpectrogramSurface::new(
+		HISTORY_SIZE,
+		frequency_to_bin_idx(SAMPLE_RATE, SAMPLES_PER_WINDOW, MAX_FREQUENCY) + 1,
+	)));
+	let pause = Arc::new(RwLock::new(false));
+	let max = Arc::new(RwLock::new(None));
 
-	spawn({
-		move || {
-			let stream_poller = InputStreamPollerBuilder::<SAMPLE_RATE, 1>::new(
-				SAMPLES_PER_WINDOW.into(),
-				INPUT_DEVICE_NAME.map(str::to_owned),
-			)
-			.build()
-			.unwrap();
-
-			let mut fft = StftAnalyzer::<SAMPLE_RATE, SAMPLES_PER_WINDOW>::default();
-			loop {
-				assert!(matches!(
-					stream_poller.state(),
-					AudioStreamSamplingState::Sampling
-				));
-				let _ = fft_tx.send(fft.analyze(stream_poller.snapshot().as_mono()).clone());
+	let _stream_poller = InputStreamBuilder::<SAMPLE_RATE, 1>::new(
+		INPUT_DEVICE_NAME.map(str::to_owned),
+		Box::new({
+			let spectrogram_surface = spectrogram_surface.clone();
+			let pause = pause.clone();
+			let max = max.clone();
+			move |chunk| {
+				buffer.extend_from_slice(chunk.raw_buffer());
+				if buffer.len() == SAMPLES_PER_WINDOW && !*pause.read().unwrap() {
+					let fft = analyzer.analyze(&buffer.to_vec());
+					*max.write().unwrap() = fft
+						.iter()
+						.max_by(|a, b| a.power().total_cmp(&b.power()))
+						.copied();
+					spectrogram_surface.write().unwrap().update(fft);
+				}
 			}
-		}
-	});
-
-	let mut spectrogram_surface = SpectrogramSurface::new(HISTORY_SIZE, FFT_BINS);
-	let mut max = None;
+		}),
+		Some(Box::new(|err| {
+			println!("input stream stopped, reason {err}");
+			exit(1);
+		})),
+	)
+	.build()
+	.unwrap();
 
 	let mut show_tutorial = true;
 	let mut show_max = true;
-	let mut pause = false;
 	loop {
 		if input::is_key_pressed(KeyCode::F1) || input::is_key_pressed(KeyCode::Escape) {
 			show_tutorial = !show_tutorial;
@@ -53,29 +65,20 @@ async fn main() {
 			show_max = !show_max;
 		}
 		if input::is_key_pressed(KeyCode::Space) {
-			pause = !pause;
+			let is_paused = *pause.read().unwrap();
+			*pause.write().unwrap() = !is_paused;
 		}
 		if input::is_key_pressed(KeyCode::Q) {
 			break;
 		}
 
-		if !pause {
-			match fft_rx.try_recv() {
-				Err(TryRecvError::Disconnected) => panic!("broken fft channel"),
-				Err(TryRecvError::Empty) => (),
-				Ok(fft) => {
-					max = fft
-						.iter()
-						.max_by(|a, b| a.power().total_cmp(&b.power()))
-						.copied();
-					spectrogram_surface.update(&fft);
-				}
-			}
-		}
-		spectrogram_surface.draw(screen_width(), screen_height());
+		spectrogram_surface
+			.read()
+			.unwrap()
+			.draw(screen_width(), screen_height());
 
 		if show_max {
-			if let Some(max) = max {
+			if let Some(max) = *max.read().unwrap() {
 				draw_text(
 					&format!("Max freq: {}, power: {}", max.frequency(), max.power()),
 					16.,

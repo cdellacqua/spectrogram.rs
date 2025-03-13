@@ -69,7 +69,7 @@ dependencies = [
 [[package]]
 name = "audio"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=ca29c7ed218af65ac7304f9f462c17179477ae34#ca29c7ed218af65ac7304f9f462c17179477ae34"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=46bc05afd9bd71f8a75295b7e24310a55afa8705#46bc05afd9bd71f8a75295b7e24310a55afa8705"
 dependencies = [
  "cpal",
  "delegate",
@@ -512,7 +512,7 @@ dependencies = [
 [[package]]
 name = "math_utils"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=ca29c7ed218af65ac7304f9f462c17179477ae34#ca29c7ed218af65ac7304f9f462c17179477ae34"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=46bc05afd9bd71f8a75295b7e24310a55afa8705#46bc05afd9bd71f8a75295b7e24310a55afa8705"
 dependencies = [
  "ringbuffer 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror 2.0.11",
@@ -565,7 +565,7 @@ dependencies = [
 [[package]]
 name = "mutex_ext"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=ca29c7ed218af65ac7304f9f462c17179477ae34#ca29c7ed218af65ac7304f9f462c17179477ae34"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=46bc05afd9bd71f8a75295b7e24310a55afa8705#46bc05afd9bd71f8a75295b7e24310a55afa8705"
 
 [[package]]
 name = "nalgebra"
@@ -884,7 +884,7 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 [[package]]
 name = "resource_daemon"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=ca29c7ed218af65ac7304f9f462c17179477ae34#ca29c7ed218af65ac7304f9f462c17179477ae34"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=46bc05afd9bd71f8a75295b7e24310a55afa8705#46bc05afd9bd71f8a75295b7e24310a55afa8705"
 
 [[package]]
 name = "riff"
@@ -1003,6 +1003,7 @@ dependencies = [
  "math_utils",
  "mutex_ext",
  "nalgebra",
+ "ringbuffer 0.15.0 (git+https://github.com/cdellacqua/ringbuffer.rs.git?rev=d7bcb7a1817f8c841605025a7f00441c499e547c)",
  "rustfft",
  "tracing",
  "tracing-subscriber",
