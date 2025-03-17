@@ -25,7 +25,7 @@ mutex_ext = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", r
 math_utils = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "46bc05afd9bd71f8a75295b7e24310a55afa8705" }
 ringbuffer = { git = "https://github.com/cdellacqua/ringbuffer.rs.git", rev = "d7bcb7a1817f8c841605025a7f00441c499e547c" }
 
-# [patch."https://github.com/cdellacqua/miscellaneous_libs.rs.git"]
-# audio = { path = "../miscellaneous_libs.rs/audio.rs", features = ["full"] }
-# math_utils = { path = "../miscellaneous_libs.rs/math_utils.rs" }
-# mutex_ext = { path = "../miscellaneous_libs.rs/mutex_ext.rs" }
+[patch."https://github.com/cdellacqua/miscellaneous_libs.rs.git"]
+audio = { path = "../miscellaneous_libs.rs/audio.rs", features = ["full"] }
+math_utils = { path = "../miscellaneous_libs.rs/math_utils.rs" }
+mutex_ext = { path = "../miscellaneous_libs.rs/mutex_ext.rs" }

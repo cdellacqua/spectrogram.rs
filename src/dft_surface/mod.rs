@@ -15,18 +15,17 @@ use macroquad::{
 
 use crate::config::{MAX_POWER, SAMPLES_PER_WINDOW, SAMPLE_RATE};
 
-pub struct SpectrogramSurface {
+pub struct DftSurface {
 	material: Material,
-	spectrogram_as_texture: Vec<u8>,
-	history_size: usize,
+	dft_as_texture: Vec<u8>,
 	fft_real_size: usize,
 }
 
-impl SpectrogramSurface {
+impl DftSurface {
 	/// # Panics
 	/// - if the macroquad material associated with the surface can't be instantiated
 	#[must_use]
-	pub fn new(history_size: usize, fft_real_size: usize) -> Self {
+	pub fn new(fft_real_size: usize) -> Self {
 		let material = load_material(
 			ShaderSource::Glsl {
 				vertex: VERTEX_SHADER,
@@ -34,7 +33,7 @@ impl SpectrogramSurface {
 			},
 			MaterialParams {
 				pipeline_params: PipelineParams::default(),
-				textures: vec!["spectrogram".to_string()],
+				textures: vec!["dft".to_string()],
 				uniforms: vec![
 					UniformDesc::new("surface_size", UniformType::Float2),
 					UniformDesc::new("max_power", UniformType::Float1),
@@ -44,32 +43,22 @@ impl SpectrogramSurface {
 		.unwrap();
 		material.set_uniform("max_power", MAX_POWER);
 		Self {
-			history_size,
 			fft_real_size,
 			material,
-			spectrogram_as_texture: vec![0u8; COLOR_CHANNELS * history_size * fft_real_size],
+			dft_as_texture: vec![0u8; COLOR_CHANNELS * fft_real_size],
 		}
 	}
 
 	pub fn update(&mut self, fft: &[DiscreteHarmonic<SAMPLE_RATE, SAMPLES_PER_WINDOW>]) {
-		let spectrogram_len = self.spectrogram_as_texture.len();
-		self.spectrogram_as_texture
-			.copy_within(self.fft_real_size * COLOR_CHANNELS..spectrogram_len, 0);
-		let base_idx = spectrogram_len - self.fft_real_size * COLOR_CHANNELS;
 		for (i, point) in fft.iter().take(self.fft_real_size).enumerate() {
-			self.spectrogram_as_texture
-				[base_idx + i * COLOR_CHANNELS..base_idx + (i + 1) * COLOR_CHANNELS]
+			self.dft_as_texture[i * COLOR_CHANNELS..(i + 1) * COLOR_CHANNELS]
 				.copy_from_slice(&point.power().to_be_bytes());
 		}
 	}
 
 	pub fn draw(&self, width: f32, height: f32) {
-		self.material.set_texture("spectrogram", {
-			let tex = Texture2D::from_rgba8(
-				self.fft_real_size as u16,
-				self.history_size as u16,
-				&self.spectrogram_as_texture,
-			);
+		self.material.set_texture("dft", {
+			let tex = Texture2D::from_rgba8(self.fft_real_size as u16, 1, &self.dft_as_texture);
 			tex.set_filter(FilterMode::Nearest);
 			tex
 		});
