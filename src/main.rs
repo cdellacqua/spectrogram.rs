@@ -96,12 +96,13 @@ async fn main() {
 
 		if show_max {
 			if let Some(max) = *max.read().unwrap() {
-				draw_text(
-					&format!("Max freq: {}, power: {}", max.frequency(), max.power()),
+				draw_multiline_text(
+					&format!("Max freq: {}\nPower: {}", max.frequency(), max.power()),
 					16.,
 					32.,
 					24.,
-					WHITE,
+					Some(1.2),
+					YELLOW,
 				);
 			}
 		}
