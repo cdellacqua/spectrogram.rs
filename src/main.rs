@@ -11,8 +11,8 @@ use audio::{
 	analysis::{dft::StftAnalyzer, frequency_to_bin_idx},
 	input::InputStreamBuilder,
 };
+use buffer_hopper::BufferHopper;
 use macroquad::{input, prelude::*};
-use ringbuffer::{AllocRingBuffer, RingBuffer};
 use spectrogram::{
 	config::{HISTORY_SIZE, INPUT_DEVICE_NAME, MAX_FREQUENCY, SAMPLES_PER_WINDOW, SAMPLE_RATE},
 	dft_surface::DftSurface,
@@ -21,7 +21,7 @@ use spectrogram::{
 
 #[macroquad::main("spectrogram")]
 async fn main() {
-	let mut buffer = AllocRingBuffer::new(SAMPLES_PER_WINDOW);
+	let mut buffer = BufferHopper::new(SAMPLES_PER_WINDOW);
 	let mut analyzer = StftAnalyzer::<SAMPLE_RATE, SAMPLES_PER_WINDOW>::default();
 	let spectrogram_surface = Arc::new(RwLock::new(SpectrogramSurface::new(
 		HISTORY_SIZE,
@@ -41,16 +41,24 @@ async fn main() {
 			let pause = pause.clone();
 			let max = max.clone();
 			move |chunk| {
-				buffer.extend_from_slice(chunk.raw_buffer());
-				if buffer.len() == SAMPLES_PER_WINDOW && !*pause.read().unwrap() {
-					let fft = analyzer.analyze(&buffer.to_vec());
-					*max.write().unwrap() = fft
-						.iter()
-						.max_by(|a, b| a.power().total_cmp(&b.power()))
-						.copied();
-					spectrogram_surface.write().unwrap().update(fft);
-					dft_surface.write().unwrap().update(fft);
-				}
+				let (spectrogram_surface, dft_surface, pause, max, analyzer) = (
+					&spectrogram_surface,
+					&dft_surface,
+					&pause,
+					&max,
+					&mut analyzer,
+				);
+				buffer.feed(chunk.as_mono(), move |window, _| {
+					if !*pause.read().unwrap() {
+						let fft = analyzer.analyze(window);
+						*max.write().unwrap() = fft
+							.iter()
+							.max_by(|a, b| a.power().total_cmp(&b.power()))
+							.copied();
+						spectrogram_surface.write().unwrap().update(fft);
+						dft_surface.write().unwrap().update(fft);
+					}
+				});
 			}
 		}),
 		Some(Box::new(|err| {

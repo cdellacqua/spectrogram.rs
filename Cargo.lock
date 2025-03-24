@@ -69,6 +69,7 @@ dependencies = [
 [[package]]
 name = "audio"
 version = "0.1.0"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4#7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4"
 dependencies = [
  "cpal",
  "delegate",
@@ -116,6 +117,11 @@ name = "bitflags"
 version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
+
+[[package]]
+name = "buffer_hopper"
+version = "0.1.0"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4#7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4"
 
 [[package]]
 name = "bumpalo"
@@ -511,6 +517,7 @@ dependencies = [
 [[package]]
 name = "math_utils"
 version = "0.1.0"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4#7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4"
 dependencies = [
  "ringbuffer 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror 2.0.11",
@@ -563,6 +570,7 @@ dependencies = [
 [[package]]
 name = "mutex_ext"
 version = "0.1.0"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4#7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4"
 
 [[package]]
 name = "nalgebra"
@@ -881,6 +889,7 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 [[package]]
 name = "resource_daemon"
 version = "0.1.0"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4#7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4"
 
 [[package]]
 name = "riff"
@@ -993,13 +1002,13 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "audio",
+ "buffer_hopper",
  "dotenv-flow",
  "itertools",
  "macroquad",
  "math_utils",
  "mutex_ext",
  "nalgebra",
- "ringbuffer 0.15.0 (git+https://github.com/cdellacqua/ringbuffer.rs.git?rev=d7bcb7a1817f8c841605025a7f00441c499e547c)",
  "rustfft",
  "tracing",
  "tracing-subscriber",
