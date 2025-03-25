@@ -3,6 +3,7 @@
 
 use core::f32;
 use std::{
+	f32::consts::TAU,
 	process::exit,
 	sync::{Arc, RwLock},
 };
@@ -53,6 +54,7 @@ async fn main() {
 						let fft = analyzer.analyze(window);
 						*max.write().unwrap() = fft
 							.iter()
+							.skip(1) // exclude DC components (0Hz)
 							.max_by(|a, b| a.power().total_cmp(&b.power()))
 							.copied();
 						spectrogram_surface.write().unwrap().update(fft);
@@ -105,7 +107,15 @@ async fn main() {
 		if show_max {
 			if let Some(max) = *max.read().unwrap() {
 				draw_multiline_text(
-					&format!("Max freq: {}\nPower: {}", max.frequency(), max.power()),
+					&format!(
+						"Max freq: {}\nPower: {}\nPhase: {}{}\n       {}{}deg",
+						max.frequency(),
+						max.power(),
+						if max.phase().signum() > 0. { '+' } else { '-' },
+						max.phase().abs(),
+						if max.phase().signum() > 0. { '+' } else { '-' },
+						max.phase().abs() / TAU * 360.,
+					),
 					16.,
 					32.,
 					24.,
