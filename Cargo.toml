@@ -10,14 +10,7 @@ repository = "https://github.com/cdellacqua/spectrogram.rs"
 debug = true
 
 [dependencies]
-anyhow = "1.0.86"
 dotenv-flow = "0.16.2"
-itertools = "0.13.0"
-rustfft = "6.2.0"
-tracing = "0.1.41"
-tracing-subscriber = "0.3.19"
-wav = "1.0.1"
-nalgebra = "0.33.2"
 macroquad = "0.4.13"
 
 audio = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "7ed824dbe9cb9ed85baaf4159f3aaf60be11dcd4", features = ["analysis", "input"] }
