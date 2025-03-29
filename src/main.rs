@@ -3,19 +3,21 @@
 
 use core::f32;
 use std::{
-	f32::consts::TAU,
 	process::exit,
 	sync::{Arc, RwLock},
 };
 
 use audio::{
-	analysis::{dft::StftAnalyzer, frequency_to_bin_idx},
+	analysis::{dft::StftAnalyzer, frequency_to_bin_idx, FrequencyBin},
 	input::InputStreamBuilder,
 };
 use buffer_hopper::BufferHopper;
 use macroquad::{input, prelude::*};
 use spectrogram::{
-	config::{HISTORY_SIZE, INPUT_DEVICE_NAME, MAX_FREQUENCY, SAMPLES_PER_WINDOW, SAMPLE_RATE},
+	config::{
+		ANALYZE_FREQUENCY, HISTORY_SIZE, INPUT_DEVICE_NAME, MAX_FREQUENCY, SAMPLES_PER_WINDOW,
+		SAMPLE_RATE,
+	},
 	dft_surface::DftSurface,
 	spectrogram_surface::SpectrogramSurface,
 };
@@ -32,7 +34,7 @@ async fn main() {
 		frequency_to_bin_idx(SAMPLE_RATE, SAMPLES_PER_WINDOW, MAX_FREQUENCY) + 1,
 	)));
 	let pause = Arc::new(RwLock::new(false));
-	let max = Arc::new(RwLock::new(None));
+	let target = Arc::new(RwLock::new(None));
 
 	let _stream_poller = InputStreamBuilder::<SAMPLE_RATE, 1>::new(
 		INPUT_DEVICE_NAME.map(str::to_owned),
@@ -40,23 +42,32 @@ async fn main() {
 			let spectrogram_surface = spectrogram_surface.clone();
 			let dft_surface = dft_surface.clone();
 			let pause = pause.clone();
-			let max = max.clone();
+			let target = target.clone();
 			move |chunk| {
-				let (spectrogram_surface, dft_surface, pause, max, analyzer) = (
+				let (spectrogram_surface, dft_surface, pause, target, analyzer) = (
 					&spectrogram_surface,
 					&dft_surface,
 					&pause,
-					&max,
+					&target,
 					&mut analyzer,
 				);
 				buffer.feed(chunk.as_mono(), move |window, _| {
 					if !*pause.read().unwrap() {
 						let fft = analyzer.analyze(window);
-						*max.write().unwrap() = fft
-							.iter()
-							.skip(1) // exclude DC components (0Hz)
-							.max_by(|a, b| a.power().total_cmp(&b.power()))
-							.copied();
+						if let Some(analyze_frequency) = ANALYZE_FREQUENCY {
+							let bin_idx =
+								FrequencyBin::<SAMPLE_RATE, SAMPLES_PER_WINDOW>::from_frequency(
+									analyze_frequency,
+								)
+								.bin_idx();
+							*target.write().unwrap() = Some(fft[bin_idx]);
+						} else {
+							*target.write().unwrap() = fft
+								.iter()
+								.skip(1) // exclude DC components (0Hz)
+								.max_by(|a, b| a.power().total_cmp(&b.power()))
+								.copied();
+						}
 						spectrogram_surface.write().unwrap().update(fft);
 						dft_surface.write().unwrap().update(fft);
 					}
@@ -72,14 +83,14 @@ async fn main() {
 	.unwrap();
 
 	let mut show_tutorial = true;
-	let mut show_max = true;
+	let mut show_target = true;
 	let mut show_instantaneous = false;
 	loop {
 		if input::is_key_pressed(KeyCode::F1) || input::is_key_pressed(KeyCode::Escape) {
 			show_tutorial = !show_tutorial;
 		}
 		if input::is_key_pressed(KeyCode::F) {
-			show_max = !show_max;
+			show_target = !show_target;
 		}
 		if input::is_key_pressed(KeyCode::V) {
 			show_instantaneous = !show_instantaneous;
@@ -104,17 +115,30 @@ async fn main() {
 				.draw(screen_width(), screen_height());
 		}
 
-		if show_max {
-			if let Some(max) = *max.read().unwrap() {
+		if show_target {
+			if let Some(target) = *target.read().unwrap() {
 				draw_multiline_text(
 					&format!(
-						"Max freq: {}\nPower: {}\nPhase: {}{}\n       {}{}deg",
-						max.frequency(),
-						max.power(),
-						if max.phase().signum() > 0. { '+' } else { '-' },
-						max.phase().abs(),
-						if max.phase().signum() > 0. { '+' } else { '-' },
-						max.phase().abs() / TAU * 360.,
+						"{} freq: {}\nPower: {}\nPhase: {}{}\n       {}{}deg",
+						if ANALYZE_FREQUENCY.is_some() {
+							"Target"
+						} else {
+							"Max"
+						},
+						target.frequency(),
+						target.power(),
+						if target.phase().signum() > 0. {
+							'+'
+						} else {
+							'-'
+						},
+						target.phase().abs(),
+						if target.phase().signum() > 0. {
+							'+'
+						} else {
+							'-'
+						},
+						target.phase().abs().to_degrees(),
 					),
 					16.,
 					32.,
@@ -122,6 +146,20 @@ async fn main() {
 					Some(1.2),
 					YELLOW,
 				);
+				{
+					let r = 15.;
+					let cx = 30.;
+					let cy = 120.;
+					draw_circle(cx, cy, r, RED);
+					draw_line(
+						cx,
+						cy,
+						cx + r * target.phase().cos(),
+						cy + r * target.phase().sin(),
+						1.,
+						WHITE,
+					);
+				}
 			}
 		}
 
@@ -138,7 +176,7 @@ fn draw_tutorial() {
 	let help_texts = [
 		"F1/Esc - Toggle tutorial",
 		"Space - Toggle sampling",
-		"F - Toggle max frequency",
+		"F - Toggle max/target data overlay",
 		"V - Switch view mode",
 		"Q - Quit",
 	]
