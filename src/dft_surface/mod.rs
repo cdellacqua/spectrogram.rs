@@ -13,19 +13,19 @@ use macroquad::{
 	texture::{FilterMode, Texture2D},
 };
 
-use crate::config::{MAX_POWER, SAMPLES_PER_WINDOW, SAMPLE_RATE};
+use crate::config::MAX_POWER;
 
 pub struct DftSurface {
 	material: Material,
 	dft_as_texture: Vec<u8>,
-	fft_real_size: usize,
+	dft_size: usize,
 }
 
 impl DftSurface {
 	/// # Panics
 	/// - if the macroquad material associated with the surface can't be instantiated
 	#[must_use]
-	pub fn new(fft_real_size: usize) -> Self {
+	pub fn new(dft_size: usize) -> Self {
 		let material = load_material(
 			ShaderSource::Glsl {
 				vertex: VERTEX_SHADER,
@@ -43,14 +43,14 @@ impl DftSurface {
 		.unwrap();
 		material.set_uniform("max_power", MAX_POWER);
 		Self {
-			fft_real_size,
+			dft_size,
 			material,
-			dft_as_texture: vec![0u8; COLOR_CHANNELS * fft_real_size],
+			dft_as_texture: vec![0u8; COLOR_CHANNELS * dft_size],
 		}
 	}
 
-	pub fn update(&mut self, fft: &[DiscreteHarmonic<SAMPLE_RATE, SAMPLES_PER_WINDOW>]) {
-		for (i, point) in fft.iter().take(self.fft_real_size).enumerate() {
+	pub fn update(&mut self, fft: &[DiscreteHarmonic]) {
+		for (i, point) in fft.iter().take(self.dft_size).enumerate() {
 			self.dft_as_texture[i * COLOR_CHANNELS..(i + 1) * COLOR_CHANNELS]
 				.copy_from_slice(&point.power().to_be_bytes());
 		}
@@ -58,7 +58,7 @@ impl DftSurface {
 
 	pub fn draw(&self, width: f32, height: f32) {
 		self.material.set_texture("dft", {
-			let tex = Texture2D::from_rgba8(self.fft_real_size as u16, 1, &self.dft_as_texture);
+			let tex = Texture2D::from_rgba8(self.dft_size as u16, 1, &self.dft_as_texture);
 			tex.set_filter(FilterMode::Nearest);
 			tex
 		});

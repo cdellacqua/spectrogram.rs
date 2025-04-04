@@ -1,4 +1,4 @@
-pub const SAMPLE_RATE: usize = 44100;
+pub const SAMPLE_RATE: audio::SampleRate = audio::SampleRate(44_100);
 pub const SAMPLES_PER_WINDOW: usize = 2048;
 pub const MAX_FREQUENCY: f32 = 15000.;
 pub const HISTORY_SIZE: usize = 512;

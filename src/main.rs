@@ -8,8 +8,9 @@ use std::{
 };
 
 use audio::{
-	analysis::{dft::StftAnalyzer, frequency_to_bin_idx, FrequencyBin},
-	input::InputStreamBuilder,
+	analysis::{dft::StftAnalyzer, windowing_fns::HannWindow, DftCtx},
+	input::InputStream,
+	SamplingCtx,
 };
 use buffer_hopper::BufferHopper;
 use macroquad::{input, prelude::*};
@@ -25,19 +26,25 @@ use spectrogram::{
 #[macroquad::main("spectrogram")]
 async fn main() {
 	let mut buffer = BufferHopper::new(SAMPLES_PER_WINDOW);
-	let mut analyzer = StftAnalyzer::<SAMPLE_RATE, SAMPLES_PER_WINDOW>::default();
+	let dft_ctx = DftCtx::new(SAMPLE_RATE, SAMPLES_PER_WINDOW);
+	let sampling_ctx = SamplingCtx::new(SAMPLE_RATE, 1);
+	let mut analyzer = StftAnalyzer::new(dft_ctx, &HannWindow);
 	let spectrogram_surface = Arc::new(RwLock::new(SpectrogramSurface::new(
 		HISTORY_SIZE,
-		frequency_to_bin_idx(SAMPLE_RATE, SAMPLES_PER_WINDOW, MAX_FREQUENCY) + 1,
+		dft_ctx.frequency_to_bin(MAX_FREQUENCY) + 1,
 	)));
 	let dft_surface = Arc::new(RwLock::new(DftSurface::new(
-		frequency_to_bin_idx(SAMPLE_RATE, SAMPLES_PER_WINDOW, MAX_FREQUENCY) + 1,
+		dft_ctx.frequency_to_bin(MAX_FREQUENCY) + 1,
 	)));
 	let pause = Arc::new(RwLock::new(false));
 	let target = Arc::new(RwLock::new(None));
 
-	let _stream_poller = InputStreamBuilder::<SAMPLE_RATE, 1>::new(
-		INPUT_DEVICE_NAME.map(str::to_owned),
+	let bin_idx =
+		ANALYZE_FREQUENCY.map(|analyze_frequency| dft_ctx.frequency_to_bin(analyze_frequency));
+
+	let _stream_poller = InputStream::new(
+		sampling_ctx,
+		INPUT_DEVICE_NAME,
 		Box::new({
 			let spectrogram_surface = spectrogram_surface.clone();
 			let dft_surface = dft_surface.clone();
@@ -51,15 +58,10 @@ async fn main() {
 					&target,
 					&mut analyzer,
 				);
-				buffer.feed(chunk.as_mono(), move |window, _| {
+				buffer.feed(chunk.to_mono(), move |window, _| {
 					if !*pause.read().unwrap() {
 						let fft = analyzer.analyze(window);
-						if let Some(analyze_frequency) = ANALYZE_FREQUENCY {
-							let bin_idx =
-								FrequencyBin::<SAMPLE_RATE, SAMPLES_PER_WINDOW>::from_frequency(
-									analyze_frequency,
-								)
-								.bin_idx();
+						if let Some(bin_idx) = bin_idx {
 							*target.write().unwrap() = Some(fft[bin_idx]);
 						} else {
 							*target.write().unwrap() = fft
@@ -79,7 +81,6 @@ async fn main() {
 			exit(1);
 		})),
 	)
-	.build()
 	.unwrap();
 
 	let mut show_tutorial = true;
@@ -125,7 +126,7 @@ async fn main() {
 						} else {
 							"Max"
 						},
-						target.frequency(),
+						dft_ctx.bin_to_frequency(target.bin()),
 						target.power(),
 						if target.phase().signum() > 0. {
 							'+'
