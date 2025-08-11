@@ -120,14 +120,14 @@ async fn main() {
 			if let Some(target) = *target.read().unwrap() {
 				draw_multiline_text(
 					&format!(
-						"{} freq: {}\nPower: {}\nPhase: {}{}\n       {}{}deg",
+						"{} freq: {}\ndB: {}\nPhase: {}{}\n       {}{}deg",
 						if ANALYZE_FREQUENCY.is_some() {
 							"Target"
 						} else {
 							"Max"
 						},
 						dft_ctx.bin_to_frequency(target.bin()),
-						target.power(),
+						target.dB(),
 						if target.phase().signum() > 0. {
 							'+'
 						} else {

@@ -6,7 +6,8 @@ varying vec2 uv;
 varying vec3 pos;
 
 uniform vec2 surface_size;
-uniform float max_power;
+uniform float max_dB;
+uniform float min_dB;
 uniform sampler2D dft;
 
 float rgba_to_f32(vec4 color) {
@@ -24,9 +25,10 @@ float rgba_to_f32(vec4 color) {
 
 void main() {
 	vec4 sample = texture2D(dft, uv);
-	float magnitude = rgba_to_f32(sample);
+	float dB = rgba_to_f32(sample);
 
-  float ratio = min(magnitude / max_power, 1.0);
+  float range = max_dB - min_dB;
+  float ratio = min((dB - min_dB) / range, 1.0);
   vec4 low    = vec4(0.0, 0.0, 0.2, 1.0);
   vec4 high   = vec4(1.0, 1.0, 1.0, 1.0);
 

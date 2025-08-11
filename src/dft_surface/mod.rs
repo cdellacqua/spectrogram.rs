@@ -13,7 +13,7 @@ use macroquad::{
 	texture::{FilterMode, Texture2D},
 };
 
-use crate::config::MAX_POWER;
+use crate::config::{MAX_DB, MIN_DB};
 
 pub struct DftSurface {
 	material: Material,
@@ -36,12 +36,14 @@ impl DftSurface {
 				textures: vec!["dft".to_string()],
 				uniforms: vec![
 					UniformDesc::new("surface_size", UniformType::Float2),
-					UniformDesc::new("max_power", UniformType::Float1),
+					UniformDesc::new("max_dB", UniformType::Float1),
+					UniformDesc::new("min_dB", UniformType::Float1),
 				],
 			},
 		)
 		.unwrap();
-		material.set_uniform("max_power", MAX_POWER);
+		material.set_uniform("max_dB", MAX_DB);
+		material.set_uniform("min_dB", MIN_DB);
 		Self {
 			dft_size,
 			material,
@@ -52,7 +54,7 @@ impl DftSurface {
 	pub fn update(&mut self, fft: &[DiscreteHarmonic]) {
 		for (i, point) in fft.iter().take(self.dft_size).enumerate() {
 			self.dft_as_texture[i * COLOR_CHANNELS..(i + 1) * COLOR_CHANNELS]
-				.copy_from_slice(&point.power().to_be_bytes());
+				.copy_from_slice(&(point.dB()).to_be_bytes());
 		}
 	}
 
