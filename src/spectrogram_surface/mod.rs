@@ -49,7 +49,7 @@ impl SpectrogramSurface {
 			history_size,
 			dft_size,
 			material,
-			spectrogram_as_texture: vec![0u8; COLOR_CHANNELS * history_size * dft_size],
+			spectrogram_as_texture: vec![u8::MAX; COLOR_CHANNELS * history_size * dft_size],
 		}
 	}
 
