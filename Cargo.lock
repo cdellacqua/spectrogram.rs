@@ -54,14 +54,14 @@ dependencies = [
 [[package]]
 name = "audio"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=c00042221fdfdd035db6fabcb0aae5ac5916aeba#c00042221fdfdd035db6fabcb0aae5ac5916aeba"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=f769af5c897520416532a5b38a8a8fd6b0671546#f769af5c897520416532a5b38a8a8fd6b0671546"
 dependencies = [
  "cpal",
  "derive_more",
  "math_utils",
  "mutex_ext",
  "resource_daemon",
- "ringbuffer 0.15.0 (git+https://github.com/cdellacqua/ringbuffer.rs.git?rev=d7bcb7a1817f8c841605025a7f00441c499e547c)",
+ "ringbuffer",
  "rustfft",
  "thiserror 2.0.11",
 ]
@@ -105,7 +105,7 @@ checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
 [[package]]
 name = "buffer_hopper"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=c00042221fdfdd035db6fabcb0aae5ac5916aeba#c00042221fdfdd035db6fabcb0aae5ac5916aeba"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=f769af5c897520416532a5b38a8a8fd6b0671546#f769af5c897520416532a5b38a8a8fd6b0671546"
 
 [[package]]
 name = "bumpalo"
@@ -471,9 +471,9 @@ dependencies = [
 [[package]]
 name = "math_utils"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=c00042221fdfdd035db6fabcb0aae5ac5916aeba#c00042221fdfdd035db6fabcb0aae5ac5916aeba"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=f769af5c897520416532a5b38a8a8fd6b0671546#f769af5c897520416532a5b38a8a8fd6b0671546"
 dependencies = [
- "ringbuffer 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ringbuffer",
  "thiserror 2.0.11",
 ]
 
@@ -514,7 +514,7 @@ dependencies = [
 [[package]]
 name = "mutex_ext"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=c00042221fdfdd035db6fabcb0aae5ac5916aeba#c00042221fdfdd035db6fabcb0aae5ac5916aeba"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=f769af5c897520416532a5b38a8a8fd6b0671546#f769af5c897520416532a5b38a8a8fd6b0671546"
 
 [[package]]
 name = "ndk"
@@ -728,18 +728,12 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 [[package]]
 name = "resource_daemon"
 version = "0.1.0"
-source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=c00042221fdfdd035db6fabcb0aae5ac5916aeba#c00042221fdfdd035db6fabcb0aae5ac5916aeba"
+source = "git+https://github.com/cdellacqua/miscellaneous_libs.rs.git?rev=f769af5c897520416532a5b38a8a8fd6b0671546#f769af5c897520416532a5b38a8a8fd6b0671546"
 
 [[package]]
 name = "ringbuffer"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3df6368f71f205ff9c33c076d170dd56ebf68e8161c733c0caa07a7a5509ed53"
-
-[[package]]
-name = "ringbuffer"
-version = "0.15.0"
-source = "git+https://github.com/cdellacqua/ringbuffer.rs.git?rev=d7bcb7a1817f8c841605025a7f00441c499e547c#d7bcb7a1817f8c841605025a7f00441c499e547c"
+version = "0.16.0"
+source = "git+https://github.com/cdellacqua/ringbuffer.rs.git?rev=caaf117582353aa201f75bf682ea63d6cb546236#caaf117582353aa201f75bf682ea63d6cb546236"
 
 [[package]]
 name = "rustc-hash"

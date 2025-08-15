@@ -14,10 +14,10 @@ dotenv-flow = "0.16.2"
 macroquad = "0.4.13"
 hound = "3.5.1"
 
-audio = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "c00042221fdfdd035db6fabcb0aae5ac5916aeba", features = ["analysis", "input"] }
-mutex_ext = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "c00042221fdfdd035db6fabcb0aae5ac5916aeba" }
-math_utils = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "c00042221fdfdd035db6fabcb0aae5ac5916aeba" }
-buffer_hopper = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "c00042221fdfdd035db6fabcb0aae5ac5916aeba" }
+audio = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "f769af5c897520416532a5b38a8a8fd6b0671546", features = ["analysis", "input"] }
+mutex_ext = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "f769af5c897520416532a5b38a8a8fd6b0671546" }
+math_utils = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "f769af5c897520416532a5b38a8a8fd6b0671546" }
+buffer_hopper = { git = "https://github.com/cdellacqua/miscellaneous_libs.rs.git", rev = "f769af5c897520416532a5b38a8a8fd6b0671546" }
 
 # [patch."https://github.com/cdellacqua/miscellaneous_libs.rs.git"]
 # audio = { path = "../miscellaneous_libs.rs/audio.rs" }
